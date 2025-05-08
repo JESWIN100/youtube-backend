@@ -9,20 +9,29 @@ const PORT = 5000;
 app.use(cors());
 
 app.get('/search', async (req, res) => {
-  const { query } = req.query;
+  let query = req.query.query;
 
+  // Default query if empty
+  if (!query || query.trim() === '') {
+    query = 'Latest Youtube Videos kerala peopls seeing';
+  }
+
+  
   try {
     const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
       params: {
         part: 'snippet',
         q: query,
         type: 'video',
+        maxResults: 500,
         key: process.env.YOUTUBE_API_KEY,
       },
     });
 
     res.json(response.data.items);
   } catch (error) {
+    console.log(error);
+    
     res.status(500).send(error.message);
     
   }
